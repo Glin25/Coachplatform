@@ -42,17 +42,13 @@ export async function signOut() {
 
   // Na uitloggen naar loginpagina
   window.location.href = "/login";
-}
 
   // Opschonen lokale opslag
   try {
     localStorage.clear();
     sessionStorage.clear();
   } catch {}
-
-
 }
-
 export async function getCurrentUser() {
   const { data: { user } } = await supabase.auth.getUser();
   return user;
