@@ -37,8 +37,18 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function signOut() {
+  // Supabase sessie beëindigen
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
+
+  // Opschonen lokale opslag
+  try {
+    localStorage.clear();
+    sessionStorage.clear();
+  } catch {}
+
+  // Altijd terug naar login scherm
+  window.location.replace('/login');
 }
 
 export async function getCurrentUser() {
