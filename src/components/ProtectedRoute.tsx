@@ -3,21 +3,21 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requireRole?: 'client' | 'coach';
+  requireRole?: 'Client' | 'coach';
 }
 
-export function ProtectedRoute({ children, requireRole }: ProtectedRouteProps) {
+export default function ProtectedRoute({ children, requireRole }: ProtectedRouteProps) {
   const { user, profile, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <div className="p-6 text-center">Even geduld…</div>;
   }
 
-  if (!user || !profile) {
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!profile) {
     return <Navigate to="/login" replace />;
   }
 
