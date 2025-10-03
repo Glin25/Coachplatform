@@ -7,7 +7,7 @@ import { AlertsPanel } from './AlertsPanel';
 import { TasksPanel } from './TasksPanel';
 import { LogOut, Users, AlertTriangle, CheckCircle } from 'lucide-react';
 import { signOut } from '../../lib/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 export function CoachDashboard() {
   const { profile } = useAuth();
@@ -18,6 +18,11 @@ export function CoachDashboard() {
     activeAlerts: 0,
     pendingTasks: 0,
   });
+
+   // Als er (net na uitloggen) geen profiel meer is → terug naar login
+  if (!profile) {
+    return <Navigate to="/login" replace />;
+  }
 
   useEffect(() => {
     loadStats();
