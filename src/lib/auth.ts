@@ -37,9 +37,12 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function signOut() {
-  // Supabase sessie beëindigen
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
+
+  // Na uitloggen naar loginpagina
+  window.location.href = "/login";
+}
 
   // Opschonen lokale opslag
   try {
