@@ -50,8 +50,7 @@ export async function signOut() {
     sessionStorage.clear();
   } catch {}
 
-  // Altijd terug naar login scherm
-  window.location.replace('/login');
+
 }
 
 export async function getCurrentUser() {
