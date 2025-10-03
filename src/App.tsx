@@ -1,14 +1,22 @@
-import { HashRouter as BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+// src/App.tsx
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { LoginPage } from "./components/auth/LoginPage";
-import { RegisterPage } from "./components/auth/RegisterPage";
+
+// Auth pagina's
+import LoginPage from "./components/auth/LoginPage";
+import RegisterPage from "./components/auth/RegisterPage";
+
+// Route-beschermer
 import ProtectedRoute from "./components/ProtectedRoute";
-import { ClientDashboard } from "./components/client/ClientDashboard";
-import { CoachDashboard } from "./components/coach/CoachDashboard";
+
+// Dashboards
+import CoachDashboard from "./components/coach/CoachDashboard";
+import ClientDashboard from "./components/client/ClientDashboard";
 
 function AppRoutes() {
   const { user, profile, loading } = useAuth();
 
+  // Laat een kleine loader zien terwijl auth/profile wordt opgehaald
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -19,28 +27,39 @@ function AppRoutes() {
 
   return (
     <Routes>
+      {/* Login is altijd beschikbaar. Als je al ingelogd bent -> naar "/" */}
       <Route
         path="/login"
         element={user ? <Navigate to="/" replace /> : <LoginPage />}
       />
+
+      {/* Register is altijd beschikbaar. Als je al ingelogd bent -> naar "/" */}
       <Route
         path="/register"
         element={user ? <Navigate to="/" replace /> : <RegisterPage />}
       />
+
+      {/* Hoofdpagina: achter ProtectedRoute; toont coach of client dashboard */}
       <Route
         path="/"
         element={
           <ProtectedRoute>
-            {profile?.rol === "coach" ? <CoachDashboard /> : <ClientDashboard />}
+            {profile?.role === "coach" ? (
+              <CoachDashboard />
+            ) : (
+              <ClientDashboard />
+            )}
           </ProtectedRoute>
         }
       />
-      <Route path="*" element={<Navigate to="/" replace />} />
+
+      {/* Fallback voor alle onbekende paden -> terug naar login */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -49,5 +68,4 @@ function App() {
     </BrowserRouter>
   );
 }
-
 export default App;

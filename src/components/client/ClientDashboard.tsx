@@ -39,9 +39,9 @@ export function ClientDashboard() {
   }
 
   async function handleSignOut() {
-    await signOut();
-    navigate('/login');
-  }
+  await signOut();  
+  navigate('/login', { replace: true }); 
+}
 
   return (
     <div className="min-h-screen bg-gray-50">

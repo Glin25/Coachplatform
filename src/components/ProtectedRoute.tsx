@@ -14,15 +14,15 @@ export default function ProtectedRoute({ children, requireRole }: ProtectedRoute
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace={true} />;
   }
 
   if (!profile) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace={true} />;
   }
 
   if (requireRole && profile.role !== requireRole) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" replace={true} />;
   }
 
   return <>{children}</>;
