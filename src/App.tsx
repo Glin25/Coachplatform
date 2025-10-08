@@ -16,23 +16,21 @@ function AppRoutes() {
 
   // 1) Reset-link herkennen en hash bewaren (voorkomt "Auth session missing!")
   useEffect(() => {
-    const isRecovery = new URLSearchParams(location.search).get('type') === 'recovery';
-    const hasAccessToken =
-      typeof window !== 'undefined' &&
-      window.location.hash &&
-      window.location.hash.includes('access_token');
+  const isRecovery = new URLSearchParams(location.search).get('type') === 'recovery';
+  const hasAccessToken =
+    typeof window !== 'undefined' &&
+    window.location.hash &&
+    window.location.hash.includes('access_token');
 
-    if (isRecovery || hasAccessToken) {
-      navigate(
-        {
-          pathname: '/reset',
-          search: location.search,      // behoud ?type=recovery
-          hash: window.location.hash,   // behoud #access_token=...
-        },
-        { replace: true }
-      );
-    }
-  }, [location, navigate]);
+  if (isRecovery || hasAccessToken) {
+    navigate('/reset', {
+      replace: true,
+      // BELANGRIJK: hash meenemen, anders krijg je "Auth session missing!"
+      hash: typeof window !== 'undefined' ? window.location.hash : undefined,
+      search: location.search,
+    });
+  }
+}, [location, navigate]);
 
   // 2) Laat een simpele spinner zien tijdens laden
   if (loading) {
