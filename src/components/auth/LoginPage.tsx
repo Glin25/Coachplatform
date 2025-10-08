@@ -1,97 +1,84 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { signIn } from '../../lib/auth';
-import { LogIn } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 export default function LoginPage() {
-  // ====== STATE ======
+  // ---- state voor inloggen ----
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ====== RESET PASSWORD STATE ======
+  // ---- state voor reset-link ----
+  const [sendingReset, setSendingReset] = useState(false);
   const [resetMsg, setResetMsg] = useState<string | null>(null);
   const [resetErr, setResetErr] = useState<string | null>(null);
-  const [sendingReset, setSendingReset] = useState(false);
 
   const navigate = useNavigate();
 
-  // ====== INLOGGEN ======
+  // Inloggen met e-mail + wachtwoord
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
       await signIn(email, password);
-      navigate('/');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to sign in');
+      navigate('/', { replace: true });
+    } catch (err: any) {
+      setError(err?.message || 'Failed to sign in');
     } finally {
       setLoading(false);
     }
   }
 
-  // ====== RESET LINK VERSTUREN ======
-  async function handleSendReset(e: React.MouseEvent) {
-    e.preventDefault();
-    setResetErr(null);
+  // Alleen e-mail nodig -> reset-link sturen
+  async function handleSendReset() {
     setResetMsg(null);
+    setResetErr(null);
 
-    if (!email) {
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setResetErr('Vul eerst je e-mailadres in.');
       return;
     }
 
     try {
       setSendingReset(true);
+
+      // LET OP: productie-URL + /reset moet in Supabase → Auth → URL Configuration → Redirect URLs staan
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset`,
+        redirectTo: 'https://coachplatform.vercel.app/reset',
+        // lokaal testen? gebruik tijdelijk: redirectTo: 'http://localhost:3000/reset',
       });
+
       if (error) throw error;
-      setResetMsg('We hebben je een reset-mail gestuurd.');
-    } catch (err: any) {
-      setResetErr(err?.message ?? 'Versturen mislukt.');
+      setResetMsg('Reset-link is verstuurd. Check je e-mail.');
+    } catch (e: any) {
+      setResetErr(e?.message || 'Versturen mislukt.');
     } finally {
       setSendingReset(false);
     }
   }
 
-  // ====== UI ======
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
-        <div className="flex items-center justify-center mb-6">
-          <div className="bg-blue-600 p-3 rounded-full">
-            <LogIn className="text-white" />
-          </div>
-        </div>
-
-        <h1 className="text-2xl font-bold text-center text-gray-900 mb-1">Welcome Back</h1>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="w-full max-w-md bg-white rounded-xl shadow p-6">
+        <h1 className="text-xl font-semibold text-center mb-2">Welcome Back</h1>
         <p className="text-center text-gray-600 mb-6">Sign in to your coaching account</p>
 
-        {/* Foutmeldingen */}
+        {/* foutmelding login */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded mb-3 text-sm">
+          <div className="mb-4 rounded bg-red-100 text-red-700 px-3 py-2 text-sm">
             {error}
           </div>
         )}
-        {resetErr && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded mb-3 text-sm">
-            {resetErr}
-          </div>
-        )}
-        {resetMsg && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded mb-3 text-sm">
-            {resetMsg}
-          </div>
-        )}
 
-        {/* Inlogformulier */}
+        {/* inlogformulier */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address
+            </label>
             <input
               type="email"
               value={email}
@@ -103,7 +90,9 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
             <input
               type="password"
               value={password}
@@ -117,15 +106,27 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white rounded-md py-2 font-medium hover:bg-blue-700 disabled:opacity-50"
+            className="w-full bg-blue-600 text-white rounded-md py-2 font-medium disabled:opacity-50"
           >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
-        {/* Reset-link sectie */}
-        <p className="text-sm text-gray-600 mt-6 text-center">
-          Wachtwoord vergeten?{' '}
+        {/* reset-link sectie (buiten het form, vraagt geen wachtwoord) */}
+        <div className="mt-6 border-t pt-4 text-center">
+          <p className="text-sm text-gray-600 mb-2">Wachtwoord vergeten?</p>
+
+          {resetErr && (
+            <div className="mb-2 rounded bg-red-100 text-red-700 px-3 py-2 text-sm">
+              {resetErr}
+            </div>
+          )}
+          {resetMsg && (
+            <div className="mb-2 rounded bg-green-100 text-green-700 px-3 py-2 text-sm">
+              {resetMsg}
+            </div>
+          )}
+
           <button
             type="button"
             onClick={handleSendReset}
@@ -134,7 +135,13 @@ export default function LoginPage() {
           >
             {sendingReset ? 'Versturen…' : 'Stuur reset-link'}
           </button>
-        </p>
+        </div>
+
+        <div className="mt-4 text-center">
+          <Link to="/register" className="text-sm text-gray-600 hover:underline">
+            Nog geen account? Maak er een aan
+          </Link>
+        </div>
       </div>
     </div>
   );
