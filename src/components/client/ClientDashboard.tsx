@@ -7,7 +7,7 @@ import { ReflectionCard } from './ReflectionCard';
 import { TrendsChart } from './TrendsChart';
 import { LogOut, Target, TrendingUp, Calendar } from 'lucide-react';
 import { signOut } from '../../lib/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 export function ClientDashboard() {
   const { profile } = useAuth();
@@ -24,7 +24,9 @@ export function ClientDashboard() {
   }, []);
 
   async function loadStats() {
-    if (!profile) return;
+   if (!profile) {
+  return <Navigate to="/login" replace />;
+}
 
     const [checkIns, goals] = await Promise.all([
       supabase.from('check_ins').select('id', { count: 'exact' }).eq('user_id', profile.id),
