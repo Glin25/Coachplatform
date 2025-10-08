@@ -13,7 +13,7 @@ function AppRoutes() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -21,32 +21,34 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Auth routes */}
-      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" replace />} />
-      <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/" replace />} />
+      <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
+      <Route path="/register" element={user ? <Navigate to="/" replace /> : <RegisterPage />} />
+
+      {/* 🔹 HIER STAAT DE NIEUWE ROUTE (OPENBAAR) */}
       <Route path="/reset" element={<ResetPassword />} />
 
-      {/* Beveiligde root-route */}
+      {/* Beveiligde route */}
       <Route
         path="/"
         element={
           <ProtectedRoute>
-            {profile?.role === 'coach' ? <CoachDashboard /> : <ClientDashboard />}
+            {profile?.role === "coach" ? <CoachDashboard /> : <ClientDashboard />}
           </ProtectedRoute>
         }
       />
 
-      {/* Fallback: alles wat niet bestaat gaat naar /login óf / */}
-      <Route path="*" element={<Navigate to={user ? '/' : '/login'} replace />} />
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
     </Routes>
   );
 }
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
+    <AuthProvider>
+      <BrowserRouter>
         <AppRoutes />
-      </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
