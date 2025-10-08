@@ -10,21 +10,33 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 function AppRoutes() {
-  const { user, profile, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ✅ Recovery-link opvangen
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const hash = location.hash || ""; // tokens zitten soms in hash
-    const isRecovery = params.get("type") === "recovery";
-    const hasAccessToken = hash.includes("access_token"); // new style
+    // Supabase reset: kan via ?type=recovery of via #access_token
+    const isRecovery = new URLSearchParams(location.search).get("type") === "recovery";
+    const hasAccessToken =
+      typeof window !== "undefined" &&
+      window.location.hash &&
+      window.location.hash.includes("access_token");
 
     if (isRecovery || hasAccessToken) {
-      navigate("/reset", { replace: true });
+      // HEEL BELANGRIJK: behoud zowel search als hash bij de redirect,
+      // anders raakt de access_token kwijt en krijg je "Auth session missing!"
+      navigate(
+        {
+          pathname: "/reset",
+          search: location.search,
+          hash: window.location.hash,
+        },
+        { replace: true }
+      );
     }
   }, [location, navigate]);
+
+  /* ... rest van je component ... */
+}
 
   // ✅ Spinner tonen tijdens laden
   if (loading) {
