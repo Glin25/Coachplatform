@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signIn } from '../../lib/auth';
-import { Login } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 export default function LoginPage() {
@@ -60,7 +60,7 @@ export default function LoginPage() {
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         <div className="flex items-center justify-center mb-6">
           <div className="bg-blue-600 p-3 rounded-full">
-            <Login className="text-white" />
+            <LogIn className="text-white" />
           </div>
         </div>
 
