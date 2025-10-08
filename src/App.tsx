@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-
+import ResetPassword from "./components/auth/ResetPassword"; // <— voeg toe bij de imports
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -23,6 +23,7 @@ function AppRoutes() {
       {/* Auth routes */}
       <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" replace />} />
       <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/" replace />} />
+      <Route path="/reset" element={<ResetPassword />} />
 
       {/* Beveiligde root-route */}
       <Route
