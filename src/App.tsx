@@ -23,12 +23,14 @@ function AppRoutes() {
     window.location.hash.includes('access_token');
 
   if (isRecovery || hasAccessToken) {
-    navigate('/reset', {
-      replace: true,
-      // BELANGRIJK: hash meenemen, anders krijg je "Auth session missing!"
-      hash: typeof window !== 'undefined' ? window.location.hash : undefined,
-      search: location.search,
-    });
+    navigate(
+      {
+        pathname: '/reset',
+        search: location.search,
+        hash: typeof window !== 'undefined' ? window.location.hash : '',
+      },
+      { replace: true }
+    );
   }
 }, [location, navigate]);
 
