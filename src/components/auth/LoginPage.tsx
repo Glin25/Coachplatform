@@ -5,19 +5,20 @@ import { LogIn } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 export default function LoginPage() {
-  // formulier-state
+  // ====== STATE ======
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // wachtwoord-reset state
-  const [sendingReset, setSendingReset] = useState(false);
-  const [resetErr, setResetErr] = useState<string | null>(null);
+  // ====== RESET PASSWORD STATE ======
   const [resetMsg, setResetMsg] = useState<string | null>(null);
+  const [resetErr, setResetErr] = useState<string | null>(null);
+  const [sendingReset, setSendingReset] = useState(false);
 
   const navigate = useNavigate();
 
+  // ====== INLOGGEN ======
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -32,8 +33,9 @@ export default function LoginPage() {
     }
   }
 
-  // Verstuur reset-link (verwijst naar /reset op jouw domein)
-  async function sendReset() {
+  // ====== RESET LINK VERSTUREN ======
+  async function handleSendReset(e: React.MouseEvent) {
+    e.preventDefault();
     setResetErr(null);
     setResetMsg(null);
 
@@ -42,19 +44,21 @@ export default function LoginPage() {
       return;
     }
 
-    setSendingReset(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset`,
-    });
-    setSendingReset(false);
-
-    if (error) {
-      setResetErr(error.message);
-    } else {
-      setResetMsg('We hebben een reset-link naar je e-mail gestuurd.');
+    try {
+      setSendingReset(true);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset`,
+      });
+      if (error) throw error;
+      setResetMsg('We hebben je een reset-mail gestuurd.');
+    } catch (err: any) {
+      setResetErr(err?.message ?? 'Versturen mislukt.');
+    } finally {
+      setSendingReset(false);
     }
   }
 
+  // ====== UI ======
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
@@ -65,24 +69,26 @@ export default function LoginPage() {
         </div>
 
         <h1 className="text-2xl font-bold text-center text-gray-900 mb-1">Welcome Back</h1>
-        <p className="text-center text-gray-600 mb-8">Sign in to your coaching account</p>
+        <p className="text-center text-gray-600 mb-6">Sign in to your coaching account</p>
 
+        {/* Foutmeldingen */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded mb-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded mb-3 text-sm">
             {error}
           </div>
         )}
         {resetErr && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded mb-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded mb-3 text-sm">
             {resetErr}
           </div>
         )}
         {resetMsg && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded mb-4">
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded mb-3 text-sm">
             {resetMsg}
           </div>
         )}
 
+        {/* Inlogformulier */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
@@ -117,17 +123,18 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-4 flex items-center justify-between text-sm">
-          <span className="text-gray-600">Wachtwoord vergeten?</span>
+        {/* Reset-link sectie */}
+        <p className="text-sm text-gray-600 mt-6 text-center">
+          Wachtwoord vergeten?{' '}
           <button
             type="button"
-            onClick={sendReset}
+            onClick={handleSendReset}
             disabled={sendingReset}
             className="text-blue-600 hover:underline disabled:opacity-50"
           >
             {sendingReset ? 'Versturen…' : 'Stuur reset-link'}
           </button>
-        </div>
+        </p>
       </div>
     </div>
   );
