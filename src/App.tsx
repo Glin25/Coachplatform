@@ -10,35 +10,31 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 function AppRoutes() {
+  const { user, profile, loading } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
+  // 1) Reset-link herkennen en hash bewaren (voorkomt "Auth session missing!")
   useEffect(() => {
-    // Supabase reset: kan via ?type=recovery of via #access_token
-    const isRecovery = new URLSearchParams(location.search).get("type") === "recovery";
+    const isRecovery = new URLSearchParams(location.search).get('type') === 'recovery';
     const hasAccessToken =
-      typeof window !== "undefined" &&
+      typeof window !== 'undefined' &&
       window.location.hash &&
-      window.location.hash.includes("access_token");
+      window.location.hash.includes('access_token');
 
     if (isRecovery || hasAccessToken) {
-      // HEEL BELANGRIJK: behoud zowel search als hash bij de redirect,
-      // anders raakt de access_token kwijt en krijg je "Auth session missing!"
       navigate(
         {
-          pathname: "/reset",
-          search: location.search,
-          hash: window.location.hash,
+          pathname: '/reset',
+          search: location.search,      // behoud ?type=recovery
+          hash: window.location.hash,   // behoud #access_token=...
         },
         { replace: true }
       );
     }
   }, [location, navigate]);
 
-  /* ... rest van je component ... */
-}
-
-  // ✅ Spinner tonen tijdens laden
+  // 2) Laat een simpele spinner zien tijdens laden
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -47,38 +43,37 @@ function AppRoutes() {
     );
   }
 
-  // ✅ Routes
+  // 3) Routes
   return (
     <Routes>
-      {/* Auth routes */}
+      {/* Publieke routes */}
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
       <Route path="/register" element={user ? <Navigate to="/" replace /> : <RegisterPage />} />
+      <Route path="/reset" element={<ResetPassword />} /> {/* openbaar */}
 
-      {/* Openbare reset route */}
-      <Route path="/reset" element={<ResetPassword />} />
-
-      {/* Beveiligde route */}
+      {/* Beveiligde root-route */}
       <Route
         path="/"
         element={
           <ProtectedRoute>
-            {profile?.role === "coach" ? <CoachDashboard /> : <ClientDashboard />}
+            {profile?.role === 'coach' ? <CoachDashboard /> : <ClientDashboard />}
           </ProtectedRoute>
         }
       />
 
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
+      {/* Fallback: alles wat niet bestaat -> naar login of naar / */}
+      <Route path="*" element={<Navigate to={user ? '/' : '/login'} replace />} />
     </Routes>
   );
 }
 
+/** ---------- App (root) ---------- */
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <AppRoutes />
-      </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
