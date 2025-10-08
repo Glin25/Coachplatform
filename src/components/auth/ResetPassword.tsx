@@ -1,64 +1,105 @@
-import { useEffect, useState } from "react";
+// src/components/auth/ResetPassword.tsx
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [confirm, setConfirm] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
-
-  // Als iemand via de mail komt, zit er een access_token in de URL (#… of ?…)
-  // We hoeven ‘m niet zelf uit te lezen; supabase.updateUser() gebruikt de sessie.
-  useEffect(() => {
-    // niks nodig hier; formulier tonen is genoeg
-  }, []);
+  const [err, setErr] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true);
+    setErr(null);
     setMsg(null);
 
-    const { error } = await supabase.auth.updateUser({ password });
-    setBusy(false);
-
-    if (error) {
-      setMsg(error.message || "Kon wachtwoord niet wijzigen.");
+    if (password.length < 6) {
+      setErr("Wachtwoord moet minimaal 6 tekens zijn.");
+      return;
+    }
+    if (password !== confirm) {
+      setErr("Wachtwoorden komen niet overeen.");
       return;
     }
 
-    setMsg("Wachtwoord gewijzigd! Je gaat terug naar de login…");
+    setSubmitting(true);
+    // Belangrijk: bij een reset-link stuurt Supabase een access_token mee.
+    // supabase.auth.updateUser gebruikt die automatisch (geen user-id nodig).
+    const { error } = await supabase.auth.updateUser({ password });
+
+    setSubmitting(false);
+    if (error) {
+      setErr(error.message);
+      return;
+    }
+
+    setMsg("Wachtwoord is bijgewerkt. Je kunt nu inloggen.");
+    // even een korte pauze zodat de gebruiker de melding ziet
     setTimeout(() => navigate("/login", { replace: true }), 1200);
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow p-6 rounded max-w-sm w-full space-y-4"
-      >
-        <h1 className="text-xl font-semibold">Nieuw wachtwoord</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="w-full max-w-md bg-white rounded-xl shadow p-6">
+        <h1 className="text-xl font-semibold mb-1">Nieuw wachtwoord instellen</h1>
+        <p className="text-sm text-gray-600 mb-4">
+          Voer hieronder je nieuwe wachtwoord in.
+        </p>
 
-        {msg && <div className="text-sm text-blue-600">{msg}</div>}
+        {err && (
+          <div className="mb-3 rounded bg-red-50 text-red-700 px-3 py-2 text-sm">
+            {err}
+          </div>
+        )}
+        {msg && (
+          <div className="mb-3 rounded bg-green-50 text-green-700 px-3 py-2 text-sm">
+            {msg}
+          </div>
+        )}
 
-        <input
-          type="password"
-          placeholder="Nieuw wachtwoord"
-          className="border rounded px-3 py-2 w-full"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={6}
-        />
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div>
+            <label className="block text-sm mb-1">Nieuw wachtwoord</label>
+            <input
+              type="password"
+              className="w-full border rounded px-3 py-2"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Minimaal 6 tekens"
+              autoFocus
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm mb-1">Bevestig wachtwoord</label>
+            <input
+              type="password"
+              className="w-full border rounded px-3 py-2"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full rounded bg-blue-600 text-white py-2 disabled:opacity-60"
+          >
+            {submitting ? "Bijwerken…" : "Wachtwoord bijwerken"}
+          </button>
+        </form>
 
         <button
-          type="submit"
-          disabled={busy}
-          className="w-full bg-blue-600 text-white rounded px-3 py-2"
+          onClick={() => navigate("/login")}
+          className="mt-3 w-full text-sm text-gray-600 underline"
         >
-          {busy ? "Bezig…" : "Wachtwoord opslaan"}
+          Terug naar login
         </button>
-      </form>
+      </div>
     </div>
   );
 }
