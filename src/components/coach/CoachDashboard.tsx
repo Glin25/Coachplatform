@@ -8,6 +8,7 @@ import { TasksPanel } from './TasksPanel';
 import { LogOut, Users, AlertTriangle, CheckCircle } from 'lucide-react';
 import { signOut } from '../../lib/auth';
 import { useNavigate, Navigate } from 'react-router-dom';
+import CoachClients from "./CoachClients";
 
 export function CoachDashboard() {
   const { profile } = useAuth();
@@ -116,16 +117,21 @@ export function CoachDashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <ClientsList onSelectClient={setSelectedClientId} />
-          </div>
+  <div className="lg:col-span-2">
+    <ClientList onSelectClient={setSelectedClientId} />
+  </div>
 
-          <div className="space-y-6">
-            <AlertsPanel onSelectClient={setSelectedClientId} onAlertUpdate={loadStats} />
-            <TasksPanel />
-          </div>
-        </div>
-      </main>
-    </div>
-  );
+  <div className="space-y-6">
+    <AlertsPanel onSelectClient={setSelectedClientId} onAlertUpdate={loadStats} />
+    <TasksPanel />
+  </div>
+</div>
+{/* Nieuw blok hieronder */}
+<section className="mt-6">
+  <h2 className="text-lg font-semibold mb-2">Mijn cliënten</h2>
+  <CoachClients />
+</section>
+</main>
+</div>
+);
 }
