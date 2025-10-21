@@ -1,29 +1,24 @@
+import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from './contexts/AuthContext';
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-  requireRole?: 'Client' | 'coach';
-}
+/**
+ * Toont altijd iets:
+ * - tijdens laden: een simpel laad-scherm
+ * - geen profiel: naar /login
+ * - wél profiel: render children
+ */
+export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { profile } = useAuth() as { profile: any | undefined };
 
-export default function ProtectedRoute({ children, requireRole }: ProtectedRouteProps) {
-  const { user, profile, loading } = useAuth();
-
-  if (loading) {
-    return <div className="p-6 text-center">Even geduld…</div>;
+  // Auth-context nog niet klaar -> toon loader i.p.v. niets
+  if (profile === undefined) {
+    return <div className="p-6 text-sm text-gray-600">Laden…</div>;
   }
-
-  if (!user) {
-    return <Navigate to="/login" replace={true} />;
+  // Niet ingelogd -> naar login
+  if (profile === null) {
+    return <Navigate to="/login" replace />;
   }
-
-  if (!profile) {
-    return <Navigate to="/login" replace={true} />;
-  }
-
-  if (requireRole && profile.role !== requireRole) {
-    return <Navigate to="/" replace={true} />;
-  }
-
+  // Ingelogd
   return <>{children}</>;
-  }
+}
