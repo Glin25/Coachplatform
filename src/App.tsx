@@ -4,7 +4,7 @@ import ResetPassword from './components/auth/ResetPassword';
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import ClientDashboard from './components/client/ClientDashboard';
+import ClientDashboard from './components/src/components/client/ClientsList.tsx/ClientDashboard';
 import CoachDashboard from './components/coach/CoachDashboard';
 import { useEffect } from 'react';
 

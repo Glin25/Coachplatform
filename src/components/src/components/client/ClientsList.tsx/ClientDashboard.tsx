@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../../../../contexts/AuthContext';
+import { supabase } from '../../../../../lib/supabase';
 import { CheckInForm } from './CheckInForm';
 import { GoalsList } from './GoalsList';
 import { ReflectionCard } from './ReflectionCard';
 import { TrendsChart } from './TrendsChart';
 import { LogOut, Target, TrendingUp, Calendar } from 'lucide-react';
-import { signOut } from '../../lib/auth';
+import { signOut } from '../../../../../lib/auth';
 import { useNavigate, Navigate } from 'react-router-dom';
 
 export function ClientDashboard() {
