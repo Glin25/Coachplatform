@@ -4,8 +4,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import supabase from '../../lib/supabase';
 
-// Zet deze import bovenaan (vervang jouw oude regel)
-import ClientList from '../client/ClientsList';
+import ClientsList from './ClientsList';
 import ClientDetailView from './ClientDetailView';
 import AlertsPanel from './AlertsPanel';
 import TasksPanel from './TasksPanel';
