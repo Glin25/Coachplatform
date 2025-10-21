@@ -1,3 +1,3 @@
 export default function App() {
-  return <div>App OK ✅</div>;
+  return <div style={{ padding: 24, fontFamily: 'sans-serif' }}>App OK ✅</div>;
 }
