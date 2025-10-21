@@ -4,7 +4,8 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import supabase from '../../lib/supabase';
 
-import ClientList from '../client/ClientsList.tsx';
+// Zet deze import bovenaan (vervang jouw oude regel)
+import ClientList from '../client/ClientsList';
 import ClientDetailView from './ClientDetailView';
 import AlertsPanel from './AlertsPanel';
 import TasksPanel from './TasksPanel';
