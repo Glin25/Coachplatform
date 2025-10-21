@@ -1,24 +1,12 @@
-import React from 'react';
+// src/components/ProtectedRoute.tsx
 import { Navigate } from 'react-router-dom';
-import { useAuth } from './contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
-/**
- * Toont altijd iets:
- * - tijdens laden: een simpel laad-scherm
- * - geen profiel: naar /login
- * - wél profiel: render children
- */
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { profile } = useAuth() as { profile: any | undefined };
+  const { user, loading } = useAuth();
 
-  // Auth-context nog niet klaar -> toon loader i.p.v. niets
-  if (profile === undefined) {
-    return <div className="p-6 text-sm text-gray-600">Laden…</div>;
-  }
-  // Niet ingelogd -> naar login
-  if (profile === null) {
-    return <Navigate to="/login" replace />;
-  }
-  // Ingelogd
+  if (loading) return <div style={{ padding: 24 }}>Authenticatie laden…</div>;
+  if (!user) return <Navigate to="/login" replace />;
+
   return <>{children}</>;
 }

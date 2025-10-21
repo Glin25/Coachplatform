@@ -13,7 +13,7 @@ function AppRoutes() {
   const { user, profile, loading } = useAuth();
   const location = useLocation();
 
-  // 1) Herken reset-link en stuur door naar /reset mét hash (voorkomt "Auth session missing!")
+  // Herken reset-link en stuur naar /reset mét hash (voorkomt "Auth session missing!")
   useEffect(() => {
     const isRecovery = new URLSearchParams(location.search).get('type') === 'recovery';
     const hasAccessToken =
@@ -22,23 +22,21 @@ function AppRoutes() {
       window.location.hash.includes('access_token');
 
     if (isRecovery || hasAccessToken) {
-      // naar /reset, maar behoud query + hash
       window.history.replaceState(null, '', '/reset' + location.search + window.location.hash);
     }
   }, [location]);
 
-  // 2) Terwijl auth/profiel nog laadt, toon niets (klein skelet kan ook)
-  if (loading) return null;
+  // Toon iets zichtbaar terwijl auth laadt (anders lijkt het “wit”)
+  if (loading) return <div style={{ padding: 24 }}>Bezig met laden…</div>;
 
-  // 3) Routes
   return (
     <Routes>
-      {/* Publieke routes */}
+      {/* Publiek */}
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
       <Route path="/register" element={user ? <Navigate to="/" replace /> : <RegisterPage />} />
       <Route path="/reset" element={<ResetPassword />} />
 
-      {/* Beveiligde root-route */}
+      {/* Beveiligd */}
       <Route
         path="/"
         element={
@@ -48,13 +46,12 @@ function AppRoutes() {
         }
       />
 
-      {/* Fallback: alles wat niet bestaat -> naar login of root */}
+      {/* Fallback */}
       <Route path="*" element={<Navigate to={user ? '/' : '/login'} replace />} />
     </Routes>
   );
 }
 
-/** App (root) */
 export default function App() {
   return (
     <BrowserRouter>
