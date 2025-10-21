@@ -1,15 +1,18 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { useEffect } from 'react';
 
+// Context & guards
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
+// Auth pages
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
 import ResetPassword from './components/auth/ResetPassword';
 
+// Dashboards (LET OP: correcte paden)
 import ClientDashboard from './components/client/ClientDashboard';
 import CoachDashboard from './components/coach/CoachDashboard';
-import { useEffect } from 'react';
 
 function AppRoutes() {
   const { user, profile, loading } = useAuth();
