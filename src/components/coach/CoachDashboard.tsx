@@ -8,7 +8,7 @@ import ClientList from '../client/ClientList';
 import ClientDetailView from './ClientDetailView';
 import AlertsPanel from './AlertsPanel';
 import TasksPanel from './TasksPanel';
-import CoachClients from './CoachClients'; // staat in dezelfde map
+import CoachClients from './CoachClients';
 
 // (optioneel) je had deze in je bestand staan; laat ze gerust staan:
 import { LogOut, Users, AlertTriangle, CheckCircle } from 'lucide-react';
