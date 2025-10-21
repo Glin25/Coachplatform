@@ -125,3 +125,5 @@ export function ClientsList({ onSelectClient }: { onSelectClient: (id: string) =
     </div>
   );
 }
+
+export default ClientsList;
