@@ -4,7 +4,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import supabase from '../../lib/supabase';
 
-import ClientsList from './ClientsList';
+import ClientsList from '../client/ClientsList';
 import ClientDetailView from './ClientDetailView';
 import AlertsPanel from './AlertsPanel';
 import TasksPanel from './TasksPanel';
