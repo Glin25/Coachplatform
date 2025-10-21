@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import ClientCheckInsTab from '../coach/ClientCheckInsTab';
-import ClientGoalsTab from '../coach/ClientGoalsTab';
-import ClientNotesTab from '../coach/ClientNotesTab';
-import ClientReflectionsTab from '../coach/ClientReflectionsTab';
+import { ClientCheckInsTab } from '../coach/ClientCheckInsTab';
+import { ClientGoalsTab } from '../coach/ClientGoalsTab';
+import { ClientNotesTab } from '../coach/ClientNotesTab';
+import { ClientReflectionsTab } from '../coach/ClientReflectionsTab';
 import { ArrowLeft, User } from 'lucide-react';
 
 interface Client {
