@@ -2,18 +2,16 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 
 import { useAuth } from '../../contexts/AuthContext';
-import supabase from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 import ClientsList from '../client/ClientsList';
-import ClientDetailView from './ClientDetailView';
+import ClientDetailView from '../client/ClientDetailView';
 import AlertsPanel from './AlertsPanel';
 import TasksPanel from './TasksPanel';
-import CoachClients from './CoachClients';
 
-// (optioneel) je had deze in je bestand staan; laat ze gerust staan:
+// Iconen en helpers
 import { LogOut, Users, AlertTriangle, CheckCircle } from 'lucide-react';
 import { signOut } from '../../lib/auth';
-
 export default function CoachDashboard() {
   const { profile } = useAuth();
   const navigate = useNavigate();
