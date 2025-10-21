@@ -192,9 +192,34 @@ export default function CoachDashboard() {
 
        <section className="mt-6">
   <h2 className="text-lg font-semibold mb-2">Mijn cliënten</h2>
-  <div className="bg-white rounded-xl shadow-sm p-4 text-sm text-gray-500">
-    (tijdelijk uitgeschakeld om een fout op te sporen)
+
+  {/* === Nieuwe koppel­functie via e-mail === */}
+  <div className="mb-4 rounded-lg border p-4 bg-white">
+    <label className="block text-sm font-medium mb-1">Cliënt e-mailadres</label>
+    <div className="flex gap-2">
+      <input
+        type="email"
+        value={clientEmail}
+        onChange={(e) => setClientEmail(e.target.value)}
+        placeholder="klant@voorbeeld.nl"
+        className="flex-1 rounded border px-3 py-2 outline-none focus:ring-2"
+      />
+      <button
+        onClick={handleLinkClient}
+        disabled={linking}
+        className="whitespace-nowrap rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-60"
+      >
+        {linking ? 'Koppelen…' : 'Koppel cliënt'}
+      </button>
+    </div>
   </div>
+
+  {/* === Meldingen === */}
+  {linkErr && <p className="mt-2 text-sm text-red-600">{linkErr}</p>}
+  {linkMsg && <p className="mt-2 text-sm text-green-600">{linkMsg}</p>}
+
+  {/* === Component die de cliëntenlijst rendert === */}
+  <CoachClients />
 </section>
       </main>
     </div>
