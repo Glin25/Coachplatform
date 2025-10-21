@@ -123,106 +123,62 @@ export default function CoachDashboard() {
 
   // Dashboard
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Coach Dashboard</h1>
-            <p className="text-sm text-gray-600">Welcome back, {profile.full_name}</p>
-          </div>
-
-          <button
-            onClick={handleSignOut}
-            className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Sign Out</span>
-          </button>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-8">
-        {/* Top stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Clients</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalClients}</p>
-              </div>
-              <Users className="w-6 h-6 text-blue-600" />
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Active Alerts</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.activeAlerts}</p>
-              </div>
-              <AlertTriangle className="w-6 h-6 text-red-600" />
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Pending Tasks</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.pendingTasks}</p>
-              </div>
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        {/* Panels */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <ClientList onSelectClient={setSelectedClientId} />
-          </div>
-
-          <div className="space-y-6">
-            <AlertsPanel
-              onSelectClient={setSelectedClientId}
-              onAlertUpdate={loadStats}
-            />
-            <TasksPanel />
-          </div>
-        </div>
-
-      return (
   <div className="min-h-screen bg-gray-50">
     <header className="bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Coach Dashboard</h1>
-        <p className="text-sm text-gray-600">Welcome back, {profile?.full_name}</p>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Coach Dashboard</h1>
+          <p className="text-sm text-gray-600">Welcome back, {profile?.full_name}</p>
+        </div>
+
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors"
+        >
+          <span>Sign Out</span>
+        </button>
       </div>
     </header>
 
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* ===== Statistieken bovenin ===== */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white shadow-sm border border-gray-100 rounded-xl p-6">
-          <p className="text-sm text-gray-500">Total Clients</p>
-          <p className="text-3xl font-bold mt-2">{stats.totalClients}</p>
+      {/* Bovenste statistiek-kaarten */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white shadow-sm p-6 border border-gray-100 rounded-xl">
+          <p className="text-sm text-gray-600">Total Clients</p>
+          <p className="text-3xl font-bold mt-1">{stats.totalClients}</p>
         </div>
-        <div className="bg-white shadow-sm border border-gray-100 rounded-xl p-6">
-          <p className="text-sm text-gray-500">Active Alerts</p>
-          <p className="text-3xl font-bold mt-2">{stats.activeAlerts}</p>
+
+        <div className="bg-white shadow-sm p-6 border border-gray-100 rounded-xl">
+          <p className="text-sm text-gray-600">Active Alerts</p>
+          <p className="text-3xl font-bold mt-1">{stats.activeAlerts}</p>
         </div>
-        <div className="bg-white shadow-sm border border-gray-100 rounded-xl p-6">
-          <p className="text-sm text-gray-500">Pending Tasks</p>
-          <p className="text-3xl font-bold mt-2">{stats.pendingTasks}</p>
+
+        <div className="bg-white shadow-sm p-6 border border-gray-100 rounded-xl">
+          <p className="text-sm text-gray-600">Pending Tasks</p>
+          <p className="text-3xl font-bold mt-1">{stats.pendingTasks}</p>
         </div>
       </div>
 
-      {/* ===== Lijst van cliënten ===== */}
-      <section className="mt-6">
-        <h2 className="text-lg font-semibold mb-2">Mijn cliënten</h2>
+      {/* Panel met lijst en alerts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          {/* === Lijst van cliënten === */}
+          <section className="mt-6">
+            <h2 className="text-lg font-semibold mb-2">Mijn cliënten</h2>
 
-        {/* Hier renderen we de ClientsList component */}
-        <ClientsList onSelectClient={setSelectedClientId} />
-      </section>
+            {/* Hier renderen we de ClientsList component */}
+            <ClientsList onSelectClient={setSelectedClientId} />
+          </section>
+        </div>
+
+        <div className="space-y-6">
+          <AlertsPanel
+            onSelectClient={setSelectedClientId}
+            onAlertUpdate={loadStats}
+          />
+          <TasksPanel />
+        </div>
+      </div>
     </main>
   </div>
 );
