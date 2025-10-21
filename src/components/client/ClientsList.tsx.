@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import supabase from '../../lib/supabase';
 import { User, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 
 interface Client {
@@ -26,7 +26,7 @@ export function ClientsList({ onSelectClient }: { onSelectClient: (id: string) =
 
     const { data: relationships } = await supabase
       .from('coach_client_relationships')
-      .select('client_id, profiles!coach_client_relationships_client_id_fkey(id, full_name, email)')
+      .select('client_id, profiles:coach_client_relationships_client_id_fkey(id, full_name, email)')
       .eq('coach_id', profile.id);
 
     if (!relationships) {
@@ -38,7 +38,7 @@ export function ClientsList({ onSelectClient }: { onSelectClient: (id: string) =
       relationships.map(async (rel: any) => {
         const client = rel.profiles;
 
-        const { data: checkIns, count } = await supabase
+        const { data: checkIns } = await supabase
           .from('check_ins')
           .select('created_at', { count: 'exact' })
           .eq('user_id', client.id)
@@ -50,9 +50,9 @@ export function ClientsList({ onSelectClient }: { onSelectClient: (id: string) =
           full_name: client.full_name,
           email: client.email,
           last_check_in: checkIns?.[0]?.created_at,
-          check_in_count: count || 0,
+          check_in_count: checkIns?.length ?? 0,
           trend: 'neutral' as const,
-        };
+        } as Client;
       })
     );
 
@@ -60,76 +60,74 @@ export function ClientsList({ onSelectClient }: { onSelectClient: (id: string) =
     setLoading(false);
   }
 
-  // --- vanaf hier plakken (onderste helft van ClientsList.tsx) ---
+  function formatLastCheckIn(date?: string) {
+    if (!date) return 'Never';
+    const diff = Date.now() - new Date(date).getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    return `${days} days ago`;
+  }
 
-function formatLastCheckIn(date?: string) {
-  if (!date) return 'Never';
-  const diff = Date.now() - new Date(date).getTime();
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (days === 0) return 'Today';
-  if (days === 1) return 'Yesterday';
-  return `${days} days ago`;
-}
+  if (loading) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">All Clients</h2>
+        <p className="text-gray-500">Loading clients…</p>
+      </div>
+    );
+  }
 
-if (loading) {
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">All Clients</h2>
-      <p className="text-gray-500">Loading clients…</p>
+      <h2 className="text-xl font-bold text-gray-900 mb-4">All Clients</h2>
+
+      {clients.length === 0 ? (
+        <div className="text-center py-12">
+          <User className="mx-auto h-12 w-12 text-gray-300" />
+          <p className="mt-2 text-gray-500">No clients yet</p>
+          <p className="mt-2 text-gray-400 text-sm">Clients will appear here when they join</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {clients.map((client) => (
+            <div
+              key={client.id}
+              onClick={() => onSelectClient(client.id)}
+              className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition cursor-pointer"
+            >
+              <div className="flex items-start gap-3">
+                <div className="bg-blue-100 p-2 rounded-full">
+                  <User className="w-5 h-5 text-blue-600" />
+                </div>
+
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">{client.full_name}</h3>
+                  <p className="text-sm text-gray-500">{client.email}</p>
+
+                  <div className="flex items-center gap-4 mt-2">
+                    <Calendar className="w-4 h-4" />
+                    <span className="text-sm text-gray-600">
+                      {formatLastCheckIn(client.last_check_in)}
+                    </span>
+                    <span className="text-sm text-gray-600">
+                      {client.check_in_count ?? 0} check-ins
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  {client.trend === 'up' && <TrendingUp className="w-5 h-5 text-green-500" />}
+                  {client.trend === 'down' && <TrendingDown className="w-5 h-5 text-red-500" />}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-return (
-  <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-    <h2 className="text-xl font-semibold text-gray-900 mb-4">All Clients</h2>
-
-    {!clients || clients.length === 0 ? (
-      <div className="text-center py-12">
-        <div className="text-7xl">👤</div>
-        <p className="text-gray-500 mt-2">Clients will appear here when they join</p>
-      </div>
-    ) : (
-      <div className="space-y-3">
-        {clients.map((client) => (
-          <div
-            key={client.id}
-            onClick={() => onSelectClient(client.id)}
-            className="cursor-pointer border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition"
-          >
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-100 p-2 rounded-full w-8 h-8" />
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">
-                  {client.full_name ?? 'Onbekende naam'}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {client.email ?? '—'}
-                </p>
-
-                <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                  <Calendar className="w-4 h-4" />
-                  <span>Last check-in: {formatLastCheckIn(client.last_check_in)}</span>
-                  <span className="ml-auto text-gray-500">
-                    {client.check_in_count ?? 0} check-ins
-                  </span>
-                </div>
-              </div>
-
-              {client.trend === 'up' && <TrendingUp className="w-5 h-5 text-green-600" />}
-              {client.trend === 'down' && <TrendingDown className="w-5 h-5 text-red-500" />}
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-);
-
-// 👇 Dit is het **allerlaatste haakje** dat de component-functie afsluit
-}
-
-// En dit moet echt als laatste regel staan:
+// ✅ BELANGRIJK: default export nodig voor `import ClientsList from '../client/ClientsList'`
 export default ClientsList;
-
-// --- tot hier plakken ---

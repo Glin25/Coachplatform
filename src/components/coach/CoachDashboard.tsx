@@ -190,38 +190,40 @@ export default function CoachDashboard() {
           </div>
         </div>
 
-       <section className="mt-6">
-  <h2 className="text-lg font-semibold mb-2">Mijn cliënten</h2>
+      return (
+  <div className="min-h-screen bg-gray-50">
+    <header className="bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-900">Coach Dashboard</h1>
+        <p className="text-sm text-gray-600">Welcome back, {profile?.full_name}</p>
+      </div>
+    </header>
 
-  {/* === Nieuwe koppel­functie via e-mail === */}
-  <div className="mb-4 rounded-lg border p-4 bg-white">
-    <label className="block text-sm font-medium mb-1">Cliënt e-mailadres</label>
-    <div className="flex gap-2">
-      <input
-        type="email"
-        value={clientEmail}
-        onChange={(e) => setClientEmail(e.target.value)}
-        placeholder="klant@voorbeeld.nl"
-        className="flex-1 rounded border px-3 py-2 outline-none focus:ring-2"
-      />
-      <button
-        onClick={handleLinkClient}
-        disabled={linking}
-        className="whitespace-nowrap rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-60"
-      >
-        {linking ? 'Koppelen…' : 'Koppel cliënt'}
-      </button>
-    </div>
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* ===== Statistieken bovenin ===== */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="bg-white shadow-sm border border-gray-100 rounded-xl p-6">
+          <p className="text-sm text-gray-500">Total Clients</p>
+          <p className="text-3xl font-bold mt-2">{stats.totalClients}</p>
+        </div>
+        <div className="bg-white shadow-sm border border-gray-100 rounded-xl p-6">
+          <p className="text-sm text-gray-500">Active Alerts</p>
+          <p className="text-3xl font-bold mt-2">{stats.activeAlerts}</p>
+        </div>
+        <div className="bg-white shadow-sm border border-gray-100 rounded-xl p-6">
+          <p className="text-sm text-gray-500">Pending Tasks</p>
+          <p className="text-3xl font-bold mt-2">{stats.pendingTasks}</p>
+        </div>
+      </div>
+
+      {/* ===== Lijst van cliënten ===== */}
+      <section className="mt-6">
+        <h2 className="text-lg font-semibold mb-2">Mijn cliënten</h2>
+
+        {/* Hier renderen we de ClientsList component */}
+        <ClientsList onSelectClient={setSelectedClientId} />
+      </section>
+    </main>
   </div>
-
-  {/* === Meldingen === */}
-  {linkErr && <p className="mt-2 text-sm text-red-600">{linkErr}</p>}
-  {linkMsg && <p className="mt-2 text-sm text-green-600">{linkMsg}</p>}
-
-  {/* === Component die de cliëntenlijst rendert === */}
-  <CoachClients />
-</section>
-      </main>
-    </div>
-  );
+);
 }
