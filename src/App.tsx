@@ -1,10 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import ResetPassword from './components/auth/ResetPassword';
+
+import ProtectedRoute from './components/ProtectedRoute';
+
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
-import ProtectedRoute from './components/ProtectedRoute';
-import ClientDashboard from './components/src/components/client/ClientsList.tsx/ClientDashboard';
+import ResetPassword from './components/auth/ResetPassword';
+
+import ClientDashboard from './components/client/ClientDashboard';
 import CoachDashboard from './components/coach/CoachDashboard';
 import { useEffect } from 'react';
 
