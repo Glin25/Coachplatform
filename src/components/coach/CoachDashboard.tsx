@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import supabase from '../../lib/supabase';
 
 import ClientsList from '../client/ClientsList';
 import ClientDetailView from '../client/ClientDetailView';
