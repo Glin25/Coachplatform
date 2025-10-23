@@ -47,7 +47,7 @@ export default function CoachDashboard() {
     // Gebruik HEAD + count, dat is het patroon dat je al had
     const [clients, alerts, tasks] = await Promise.all([
       supabase
-        .from('coach_client_relationships')
+        .from('coach_client_relations')
         .select('id', { count: 'exact', head: true })
         .eq('coach_id', profile.id),
 
