@@ -128,3 +128,5 @@ export function ClientDetailView({ clientId, onBack }: { clientId: string; onBac
     </div>
   );
 }
+
+export default ClientDetailView;
