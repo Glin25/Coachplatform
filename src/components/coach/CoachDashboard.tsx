@@ -6,8 +6,8 @@ import { supabase } from '../../lib/supabase';
 
 import ClientsList from '../client/ClientsList';
 import ClientDetailView from '../client/ClientDetailView';
-import AlertsPanel from './AlertsPanel';
-import TasksPanel from './TasksPanel';
+import { AlertsPanel } from './AlertsPanel';
+import { TasksPanel } from './TasksPanel';
 
 // Iconen en helpers
 import { LogOut, Users, AlertTriangle, CheckCircle } from 'lucide-react';
