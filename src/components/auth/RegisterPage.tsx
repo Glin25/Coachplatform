@@ -21,34 +21,60 @@ export function RegisterPage() {
   setLoading(true);
 
   try {
-    // 1️⃣ Aanmelden bij Supabase Auth
+    // 1) Aanmelden bij Supabase Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
-
     if (error) throw error;
+
     const user = data.user;
-    if (!user) throw new Error('Geen gebruiker terug van Supabase');
+    if (!user) {
+      throw new Error('Geen gebruiker terug van Supabase');
+    }
 
-    // 2️⃣ Profiel bijwerken
-// - als er een coach_id in de URL zit → altijd client + invited_by = coach
-// - anders → gebruik rol uit het formulier (client/coach)
-const updates: any = {
-  role: coachIdFromUrl ? 'client' : role,
-};
+    // 2) Profiel bijwerken (rol + naam + eventueel invited_by)
+    const updates: any = {
+      role,
+      full_name: fullName,
+    };
 
-if (coachIdFromUrl) {
-  updates.invited_by = coachIdFromUrl;
-}
+    if (role === 'client' && coachIdFromUrl) {
+      updates.invited_by = coachIdFromUrl;
+    }
 
-    await supabase.from('profiles').update(updates).eq('id', user.id);
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', user.id);
 
-    // 3️⃣ Redirect naar login-pagina
+    if (profileError) {
+      throw profileError;
+    }
+
+    // 3) Als dit een client is én er staat een coach_id in de URL:
+    //    -> maak de koppeling in coach_client_relations
+    if (role === 'client' && coachIdFromUrl) {
+      const { error: linkError } = await supabase
+        .from('coach_client_relations') // LET OP: zonder "ship"
+        .insert({
+          coach_id: coachIdFromUrl,
+          client_id: user.id,
+        });
+
+      if (linkError && linkError.code !== '23505') {
+        // 23505 = duplicate key, dat is niet erg
+        throw linkError;
+      }
+    }
+
+    // 4) Klaar -> terug naar login
     navigate('/login');
-  } catch (err) {
-    console.error('Fout bij registratie:', err);
-    setError(err instanceof Error ? err.message : 'Registratie mislukt');
+  } catch (err: any) {
+    console.error(err);
+    setError(
+      err instanceof Error ? err.message : 'Registratie mislukt'
+    );
   } finally {
     setLoading(false);
   }
