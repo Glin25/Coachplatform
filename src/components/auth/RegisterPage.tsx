@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
 import { signUp } from '../../lib/auth';
 import { UserPlus } from 'lucide-react';
 
 export function RegisterPage() {
+  const [searchParams] = useSearchParams();
+  const coachIdFromUrl = searchParams.get('coach_id');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -13,19 +16,39 @@ export function RegisterPage() {
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  e.preventDefault();
+  setError('');
+  setLoading(true);
 
-    try {
-      await signUp(email, password, fullName, role);
-      navigate('/');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to sign up');
-    } finally {
-      setLoading(false);
+  try {
+    // 1️⃣ Aanmelden bij Supabase Auth
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) throw error;
+    const user = data.user;
+    if (!user) throw new Error('Geen gebruiker terug van Supabase');
+
+    // 2️⃣ Profiel bijwerken: rol = client, invited_by = coach uit URL (indien aanwezig)
+    const updates: any = { role: 'client' };
+
+    if (coachIdFromUrl) {
+      updates.invited_by = coachIdFromUrl;
     }
+
+    await supabase.from('profiles').update(updates).eq('id', user.id);
+
+    // 3️⃣ Redirect naar login-pagina
+    navigate('/login');
+  } catch (err) {
+    console.error('Fout bij registratie:', err);
+    setError(err instanceof Error ? err.message : 'Registratie mislukt');
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center p-4">
