@@ -31,12 +31,16 @@ export function RegisterPage() {
     const user = data.user;
     if (!user) throw new Error('Geen gebruiker terug van Supabase');
 
-    // 2️⃣ Profiel bijwerken: rol = client, invited_by = coach uit URL (indien aanwezig)
-    const updates: any = { role: 'client' };
+    // 2️⃣ Profiel bijwerken
+// - als er een coach_id in de URL zit → altijd client + invited_by = coach
+// - anders → gebruik rol uit het formulier (client/coach)
+const updates: any = {
+  role: coachIdFromUrl ? 'client' : role,
+};
 
-    if (coachIdFromUrl) {
-      updates.invited_by = coachIdFromUrl;
-    }
+if (coachIdFromUrl) {
+  updates.invited_by = coachIdFromUrl;
+}
 
     await supabase.from('profiles').update(updates).eq('id', user.id);
 
