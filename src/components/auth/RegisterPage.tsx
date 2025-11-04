@@ -53,20 +53,21 @@ export function RegisterPage() {
     }
 
     // 3) Als dit een client is én er staat een coach_id in de URL:
-    //    -> maak de koppeling in coach_client_relations
-    if (role === 'client' && coachIdFromUrl) {
-      const { error: linkError } = await supabase
-        .from('coach_client_relations') // LET OP: zonder "ship"
-        .insert({
-          coach_id: coachIdFromUrl,
-          client_id: user.id,
-        });
+//    -> probeer de koppeling te maken, maar laat registratie nooit falen
+if (role === 'client' && coachIdFromUrl) {
+  const { error: linkError } = await supabase
+    .from('coach_client_relations') // LET OP: juiste tabelnaam
+    .insert({
+      coach_id: coachIdFromUrl,
+      client_id: user.id,
+    });
 
-      if (linkError && linkError.code !== '23505') {
-        // 23505 = duplicate key, dat is niet erg
-        throw linkError;
-      }
-    }
+  if (linkError && linkError.code !== '23505') {
+    // 23505 = duplicate key, dat is niet erg
+    console.warn('Kon client niet automatisch koppelen aan coach:', linkError);
+    // we gooien GEEN error meer -> registratie gaat gewoon door
+  }
+}
 
     // 4) Klaar -> terug naar login
     navigate('/login');
